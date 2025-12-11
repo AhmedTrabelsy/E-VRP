@@ -1,0 +1,79 @@
+Complexité du GA : O(G × P × C)
+
+---------------------------------------------------
+
+Entrée :
+    - nodes : liste des noeuds (clients, stations, dépôt)
+    - vehicle_capacity : capacité du véhicule
+    - battery_capacity : capacité de la batterie
+    - pop_size : taille de la population
+    - max_gen : nombre maximum de générations
+    - crossover_rate : taux de crossover
+    - mutation_rate : taux de mutation
+
+Sortie :
+    - best_solution : meilleure solution trouvée
+    - best_score : score associé
+    - best_info : informations détaillées (distance, pénalités, etc.)
+
+---------------------------------------------------
+
+1. Initialisation :
+    population <- []
+    Pour i de 1 à pop_size :
+        solution <- générer une solution initiale aléatoire(nodes, vehicle_capacity, battery_capacity)
+        population.append(solution)
+    FinPour
+
+2. Évaluation :
+    fitness <- []
+    aux_info <- []
+    Pour chaque solution dans population :
+        f, info <- calculer_objectif(solution, nodes, vehicle_capacity, battery_capacity)
+        fitness.append(f)
+        aux_info.append(info)
+    FinPour
+
+3. Boucle principale des générations :
+    Pour gen de 1 à max_gen :
+        new_population <- []
+        Tant que taille(new_population) < pop_size :
+            parent1 <- sélectionner_deux_par_compétition(population, fitness)
+            parent2 <- sélectionner_deux_par_compétition(population, fitness)
+            
+            Si random() < crossover_rate :
+                child1, child2 <- crossover(parent1, parent2, nodes, vehicle_capacity, battery_capacity)
+            Sinon :
+                child1, child2 <- parent1, parent2
+            FinSi
+
+            Si random() < mutation_rate :
+                child1 <- mutation(child1, nodes, vehicle_capacity, battery_capacity)
+            FinSi
+            Si random() < mutation_rate :
+                child2 <- mutation(child2, nodes, vehicle_capacity, battery_capacity)
+            FinSi
+
+            new_population.append(child1)
+            new_population.append(child2)
+        FinTantQue
+
+        population <- new_population[:pop_size]
+
+        # Réévaluer fitness
+        fitness <- []
+        aux_info <- []
+        Pour chaque solution dans population :
+            f, info <- calculer_objectif(solution, nodes, vehicle_capacity, battery_capacity)
+            fitness.append(f)
+            aux_info.append(info)
+        FinPour
+    FinPour
+
+4. Sélection de la meilleure solution :
+    best_idx <- index du minimum dans fitness
+    best_solution <- population[best_idx]
+    best_score <- fitness[best_idx]
+    best_info <- aux_info[best_idx]
+
+Retourner best_solution, best_score, best_info
